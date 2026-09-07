@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Klok</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+  }
+  #klok {
+    font-family: Arial, sans-serif;
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #1a1a1a;
+    padding: 20px 40px;
+    border-radius: 10px;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  }
+  #klok.knipper {
+    animation: knipperEffect 1s ease-in-out 30;
+  }
+  @keyframes knipperEffect {
+    0%, 100% {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      transform: scale(1);
+    }
+    50% {
+      background-color: #70a275;
+      color: #1a1a1a;
+      transform: scale(1.08);
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="klok"></div>
+  <script>
+    let laatsteKwartier = null;
+
+    function updateKlok() {
+      const nu = new Date();
+      let uren = nu.getHours().toString().padStart(2, '0');
+      let minuten = nu.getMinutes().toString().padStart(2, '0');
+      let seconden = nu.getSeconds();
+      document.getElementById('klok').textContent = uren + ':' + minuten;
+
+      // Controleer of we op een kwartierwissel zitten (xx:00, xx:15, xx:30, xx:45)
+      const kwartierMoment = nu.getMinutes() % 15 === 0 && seconden === 0;
+      const kwartierId = nu.getHours() + '-' + nu.getMinutes();
+
+      if (kwartierMoment && laatsteKwartier !== kwartierId) {
+        laatsteKwartier = kwartierId;
+        const klokEl = document.getElementById('klok');
+        klokEl.classList.remove('knipper');
+        void klokEl.offsetWidth; // forceer reflow zodat animatie opnieuw start
+        klokEl.classList.add('knipper');
+      }
+    }
+    updateKlok();
+    setInterval(updateKlok, 1000);
+  </script>
+</body>
+</html>
